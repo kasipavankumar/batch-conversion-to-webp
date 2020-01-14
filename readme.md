@@ -44,7 +44,14 @@ This script can do the following:
 * Detect for the missing images after conversion & restore them accordingly.
 * If the missing images are present in the original directory, it organizes them accordingly.
 
-Few more features are in progress. 
+Few more features are in progress.
+
+## How to run this script?
+1. Download the [WebP library](https://developers.google.com/speed/webp/docs/precompiled) provide by Google.
+2. Extract the compressed folder & add the path of the bin directory to your system variables.
+Path will look something like this: `..\libwebp-0.4.1-rc1-windows-x64\bin`
+3. To test the installtion, enter `cwebp -version` which will return the version number. This indicates a successful installtion.
+4. Now, you can execute the script to get your output. 
 
 I hope you find this script useful, cheers!
 
