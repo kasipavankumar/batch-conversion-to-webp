@@ -6,14 +6,12 @@ The WebP format is always recommended for everything web.
 
 The aim of this script is to convert all your images in batch & organize them to a new directory.
 
----
 
 ## Why WebP?
 WebP is the format developed with web in mind. It provides many performance benefits while serving the assets for your website. 
 
 Reference: [web.dev](https://web.dev/serve-images-webp/)
 
----
 
 ## How the script works?
 ![Demo](demo/demo.gif "gif")
@@ -36,7 +34,6 @@ _The name of the directory can be modified by editing the `dir_name` in the scri
 
 **NOTE: Converted images will have the same name as they had before conversion.**
 
----
 
 ## Why this script?
 This script can do the following:
