@@ -1,5 +1,5 @@
 # WebP Converter
-## Handy Python script that converts images to the WebP format.
+## A Handy Python script that converts images to the WebP format.
 
 It is always good to serve optimized & quality images on your website.
 The WebP format is always recommended for everything web.
@@ -48,7 +48,7 @@ Few more features are in progress.
 
 ## How to run this script?
 1. Download & install the latest stable version of [Python](https://www.python.org/downloads/).
-2. Download the [WebP library](https://developers.google.com/speed/webp/docs/precompiled) provide by Google.
+2. Download the [WebP library](https://developers.google.com/speed/webp/docs/precompiled) provided by Google.
 3. Extract the compressed folder & add the path of the bin directory to your system variables.
 Path will look something like this: `..\libwebp-0.4.1-rc1-windows-x64\bin`
 4. To test the installtion, enter `cwebp -version` in CLI, which will return the version number. This indicates a successful installtion.
