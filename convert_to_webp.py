@@ -42,6 +42,8 @@ def get_images():
     except:
         pass
 
+list_of_original_images = get_images()   
+
 # Function to convert the images to WebP format 
 # https://stackoverflow.com/a/48066158
 def convert_to_webp(image):
@@ -90,9 +92,6 @@ def get_missing_images_from_new_directory():
         global any_missing_images
 
         if(os.path.exists(os.path.join(os.curdir, dir_name))):
-            list_of_original_images = [file for file in os.listdir(os.curdir) 
-                                        if file.endswith(extensions)]
-
             list_of_converted_images = os.listdir(
                                         os.path.join(os.curdir, dir_name))
 
@@ -176,17 +175,21 @@ def main():
         # Check if all the images are already converted
         # before performing the operation
         if(if_images_converted() == 'Images already exist'):
-            print('All the images already exist in WebP format.')
+            print('All the images exist in WebP format.')
             input('\nPress any key to exit ')
             return
 
         elif(if_images_converted() == 'Missing images'):
             if(type(get_missing_images_from_new_directory()) is list):
                 if(if_missing_images_exist() == True):
-                    print('The converted images already exist,', end = ' ')
-                    print('moving them to the directory...')
+                    print('The converted images already exist in the original directory,', end = ' ')
+                    print('moving them to the {}...'.format(dir_name))
+                    start = perf_counter()
+
                     move_webp_images()
-                    print('Done.')
+                    
+                    elapsed = perf_counter() - start
+                    print('\nSuccessfully moved the images in {0:.4f}s'.format(elapsed))
                     input('\nPress any key to exit ')
                 else:
                     print('Restoring the missing images...\n')
@@ -196,10 +199,8 @@ def main():
                     move_webp_images()
 
                     elapsed = perf_counter() - start
-                    print('\nSuccessfully restored the missing images in {}s'.format(elapsed))
+                    print('\nSuccessfully restored the missing images in {0:.4f}s'.format(elapsed))
                     input('\nPress any key to exit ')
-            else:
-                print('Voila! There are no missing images.')
 
         # When images are not converted,
         # Convert to WebP & then move them to a new folder
@@ -212,7 +213,7 @@ def main():
             move_webp_images()
 
             elapsed_time = perf_counter() - start_time
-            print('\nTask completed in {}s'.format(elapsed_time))
+            print('\nTask completed in {0:.4f}s'.format(elapsed_time))
             input('\nPress any key to exit ')
 
 main()
