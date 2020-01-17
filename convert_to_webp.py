@@ -127,7 +127,8 @@ def if_missing_images_exist():
                             for filename in webp_images_in_curdir]))
 
         missing_images_in_curdir = [filename.split('.')[0] for filename in set(missing_images)
-                            if splitext(filename)[0] in converted_images_in_curdir]
+                            if splitext(filename)[0] 
+                            in converted_images_in_curdir]
         
         if(len(missing_images_in_curdir) > 0):
             return(True)

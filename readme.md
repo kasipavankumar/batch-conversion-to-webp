@@ -44,12 +44,12 @@ The script is smart enough to:
 More features are in progress.
 
 ## How to run this script?
-1. Download & install the latest stable version of [Python](https://www.python.org/downloads/).
-2. Download the [WebP library](https://developers.google.com/speed/webp/docs/precompiled) provided by Google.
-3. Extract the compressed folder & add the path of the bin directory to your system variables.
-Path will look something like this: `..\libwebp-0.4.1-rc1-windows-x64\bin`
-4. To test the installtion, enter `cwebp -version` in CLI, which will return the version number. This indicates a successful installtion.
-5. Now, you can execute the script to get your output. 
+1. Install the latest & stable version i.e., **3.8.1** of [Python](https://www.python.org/downloads/).
+2. Download the [WebP library](https://developers.google.com/speed/webp/docs/precompiled) provided by Google. You can find the latest version i.e., **1.1.0** at bottom of the page.
+3. Extract the compressed folder & add path of the bin directory to your system variables.
+Path will look something like this: `..\libwebp-1.1.0-windows-x64\bin`
+4. Enter `cwebp -version` in CLI, which will return the version number. This indicates a successful installation.
+5. You are ready to copy the script & use it.
 
 I hope you find this script useful, cheers!
 
