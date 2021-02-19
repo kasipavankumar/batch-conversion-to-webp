@@ -52,7 +52,7 @@ def convert_to_webp(image):
             filename, extension = image, image.split('.')[1]
             filename_without_extension = filename.replace(
                     '.{}'.format(extension), '')
-            command = 'cwebp -q {} {} -o {}.webp'.format(
+            command = 'cwebp -q {} "{}" -o "{}.webp"'.format(
             quality, filename, filename_without_extension)
             process = subprocess.Popen(command, stdout=subprocess.PIPE)
             output, error = process.communicate()
