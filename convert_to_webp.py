@@ -1,6 +1,6 @@
 '''
     Script to convert all the images from
-    common formats like jpg, png to
+    common formats like jpg, png, jpeg to
     next gen WebP format.
 
     Make sure to have the following utility added
@@ -16,101 +16,76 @@
     @version 1.0
 '''
 
+# Required packages
 import os                       # For OS level commands
 import subprocess               # For executing bash commands
 import shutil                   # For moving files
 from os.path import splitext    # To seperate filename & its extension
 from time import perf_counter   # To measure the execution time
+import sys                      # To take params input from command line
 
-# Global namespace
-dir_name = 'webp'
-any_missing_images = False
-extensions = ('.png', '.jpg', '.jpeg')
-are_images_converted = os.path.exists(os.path.join(os.curdir, dir_name))
+# Global variables
+dir_name = 'webp'                       # Directory name for WebP images
+extensions = ('.png', '.jpg', '.jpeg')  # Image file extensions to convert
+converted_extension = '.webp'           # Extension for converted WebP images
 
 # Function to get all the images from a given directory
-def get_images():
+def get_images(directory, extensions=extensions):
     try:
-        list_of_images = os.listdir(os.curdir)
+        list_of_images = os.listdir(directory)
         images = list()
 
         for image in list_of_images:
             if image.endswith(extensions):
-                images.append(image)
+                images.append(os.path.join(directory, image))
 
         return(images)
     except:
         pass
 
-list_of_original_images = get_images()   
-
 # Function to convert the images to WebP format 
-# https://stackoverflow.com/a/48066158
-def convert_to_webp(image):
-        try:
-            quality = 80
-            filename, extension = image, image.split('.')[1]
-            filename_without_extension = filename.replace(
-                    '.{}'.format(extension), '')
-            command = 'cwebp -q {} "{}" -o "{}.webp"'.format(
-            quality, filename, filename_without_extension)
-            process = subprocess.Popen(command, stdout=subprocess.PIPE)
-            output, error = process.communicate()
-
-        except:
-            pass
-
-# Function to move the webp images to a new folder
-# https://stackoverflow.com/a/36091444
-def move_webp_images():
+def convert_to_webp(image, directory):
+    print('Converting {}...'.format(image))
     try:
-        # Create the directory if only it doesn't exist
-        if not os.path.exists(dir_name):
-            os.mkdir(dir_name)
+        quality = 80
+        filename, extension = os.path.basename(image), os.path.splitext(image)[1]
+        filename_without_extension = filename.replace(extension, '')
+        command = 'cwebp -q {} "{}" -o "{}.webp"'.format(quality, image, os.path.join(directory, filename_without_extension))
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+        output, error = process.communicate()
 
-        # If the directory exist,
-        # get the list of images present in it & match it with the
-        # original list
-        else:
-            pass
-
-        # Get all the images with .webp extension
-        # and move them to a new folder
-        webp_ext = ('.webp')
-        images = os.listdir(os.curdir)
-        subFolder = os.path.join(os.curdir, dir_name)
-        for image in images:
-            if image.endswith(webp_ext):
-                shutil.move(os.path.join(os.curdir, image), subFolder)
     except:
         pass
 
-# Function to search for any missing images
-# from the converted images directory.
-def get_missing_images_from_new_directory():
+# Function to move the webp images to a new folder
+def move_webp_images(directory):
     try:
-        global any_missing_images
+        # Create the directory if it doesn't exist
+        if not os.path.exists(os.path.join(directory, dir_name)):
+            os.mkdir(os.path.join(directory, dir_name))
 
-        if(os.path.exists(os.path.join(os.curdir, dir_name))):
-            list_of_converted_images = os.listdir(
-                                        os.path.join(os.curdir, dir_name))
+        # Get all the images with .webp extension and move them to a new folder
+        for image in os.listdir(directory):
+            if image.endswith('.webp'):
+                shutil.move(os.path.join(directory, image), os.path.join(directory, dir_name))
+    except:
+        pass
 
-            # Match the converted images list with the original
-            # list to search for any missing images.
-            # https://stackoverflow.com/a/33837822
-            converted_images = set([splitext(filename)[0]
-                                for filename in list_of_converted_images 
-                                if filename.endswith('.webp')])
+# Function to search for any missing images from the converted images directory
+def get_missing_images_from_new_directory(directory):
+    try:
+        # Update the usage of get_images()
+        list_of_original_images = get_images(directory)
+        if(os.path.exists(os.path.join(directory, dir_name))):
+            list_of_converted_images = os.listdir(os.path.join(directory, dir_name))
 
-            missing_images = [filename for filename in set(list_of_original_images)
-                                if splitext(filename)[0] not in converted_images]
+            # Match the converted images list with the original list to search for any missing images
+            converted_images = set([os.path.splitext(filename)[0] for filename in list_of_converted_images if filename.endswith('.webp')])
+
+            missing_images = [filename for filename in set(list_of_original_images) if os.path.splitext(filename)[0] not in converted_images]
 
             if(len(missing_images) > 0):
-                any_missing_images = True
                 return(missing_images)
-            else:
-                any_missing_images = False
-
     except Exception as e:
         print(e)
 
@@ -135,59 +110,55 @@ def if_missing_images_exist():
     except:
         pass
 
-# Restore the missing images.
-def restore():
+# Restore the missing images
+def restore(directory):
     try:
-        if(get_missing_images_from_new_directory() != False):
-            for image in get_missing_images_from_new_directory():
-                convert_to_webp(image)
+        if(get_missing_images_from_new_directory(directory) is not None):
+            for image in get_missing_images_from_new_directory(directory):
+                convert_to_webp(image, directory)
     except Exception as e:
-        print(e)    
+        print(e)
 
-# Function to check if there are any images
-# in the current directory
-def if_images_exist():
-    if(len(get_images()) == 0):
-        return('No images')
+# Function to check if there are any images in the directory
+def if_images_exist(directory):
+    images = get_images(directory)
+    if images is None:
+        return 'Error: Unable to retrieve images'
+    elif len(images) == 0:
+        return 'No images'
 
-# Function to check if all the images 
-# are already converted to WebP
-def if_images_converted():
-    dir_name = 'webp'
+# Function to check if all the images are already converted to WebP
+def if_images_converted(directory):
+    if_all_images_exist = get_images(os.path.join(directory, dir_name), converted_extension)
+    if if_all_images_exist is None:
+        return 'Unable to get all images exists'
+    elif((len(get_images(directory)) == len(if_all_images_exist)) and (len(get_images(directory)) > 0) and (len(if_all_images_exist) > 0)):
+        return('Images already exist')
+    return('Missing Images')
 
-    if os.path.exists(dir_name):
-        if_all_images_exist = os.listdir(os.path.join(os.curdir, dir_name))
 
-        if((len(get_images()) == len(if_all_images_exist) and
-            (len(get_images()) > 0) and len(if_all_images_exist) > 0)):
-            return('Images already exist')
-        
-        return('Missing images')
-
-def main():
+def main(directory):
 
     # Check if there are any images
-    if(if_images_exist() == 'No images'):
+    if(if_images_exist(directory) == 'No images'):
         print('There are no images in the current directory.')
         input('\nPress any key to exit ')
         return
     else:
 
-        # Check if all the images are already converted
-        # before performing the operation
-        if(if_images_converted() == 'Images already exist'):
+        # Check if all the images are already converted before performing the operation
+        if(if_images_converted(directory) == 'Images already exist'):
             print('All the images exist in WebP format.')
             input('\nPress any key to exit ')
             return
 
-        elif(if_images_converted() == 'Missing images'):
-            if(type(get_missing_images_from_new_directory()) is list):
-                if(if_missing_images_exist() == True):
-                    print('The converted images already exist in the original directory,', end = ' ')
-                    print('moving them to the {}...'.format(dir_name))
+        elif(if_images_converted(directory) == 'Missing images'):
+            if(type(get_missing_images_from_new_directory(directory)) is list):
+                if(if_missing_images_exist(directory) is True):
+                    print('The converted images already exist in the original directory, moving them to the {}...'.format(dir_name))
                     start = perf_counter()
 
-                    move_webp_images()
+                    move_webp_images(directory)
                     
                     elapsed = perf_counter() - start
                     print('\nSuccessfully moved the images in {0:.4f}s'.format(elapsed))
@@ -196,25 +167,32 @@ def main():
                     print('Restoring the missing images...\n')
                     start = perf_counter()
 
-                    restore()
-                    move_webp_images()
+                    restore(directory)
+                    move_webp_images(directory)
 
                     elapsed = perf_counter() - start
                     print('\nSuccessfully restored the missing images in {0:.4f}s'.format(elapsed))
                     input('\nPress any key to exit ')
 
-        # When images are not converted,
-        # Convert to WebP & then move them to a new folder
+        # When images are not converted, convert to WebP & then move them to a new folder
         else:
             start_time = perf_counter()
-            if(len(get_images()) > 0):
-                for image in get_images():
-                    convert_to_webp(image)
+            length_of_get_images = get_images(directory)
+            if length_of_get_images is None:
+                return 'Error: Unable to retrieve images'
+            elif(len(get_images(directory)) > 0):
+                for image in get_images(directory):
+                    convert_to_webp(image, directory)
 
-            move_webp_images()
+            move_webp_images(directory)
 
             elapsed_time = perf_counter() - start_time
             print('\nTask completed in {0:.4f}s'.format(elapsed_time))
             input('\nPress any key to exit ')
 
-main()
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        main(sys.argv[1])
+    else:
+        print(f'Usage: python convert_to_webp.py <directory>\nDefault path is Current directory: {os.getcwd()}')
+        main(os.getcwd())
